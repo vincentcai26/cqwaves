@@ -1,6 +1,6 @@
 \documentclass[12pt]{amsart}
 
-\usepackage{amsfonts,latexsym,amsthm,amssymb,amsmath,amscd,euscript}
+\usepackage{amsfonts,latexsym,amsthm,amssymb,amsmath,amscd,euscript,graphicx,tikz}
 \usepackage{framed}
 \usepackage{fullpage}
 \usepackage{hyperref}
@@ -37,7 +37,7 @@
 \nc{\on}{\operatorname}
 \nc{\Spec}{\on{Spec}}
 
-\title{MAT 217, Pset $1$} 
+\title{Classical and Quantum Waves Brief} 
 \date{\today}
 
 \begin{document}
@@ -49,7 +49,125 @@
 \centerline{\today}
 \vspace*{0.15in}
 
-\section*{Intro}
+\section{Loaded String System}
+
+Typically a system of coupled harmonic oscillators can be solved by finding the normal modes
+of the system, which are solutions where all components of the system oscillate at the same 
+frequency and in the same phase as each other. Then, the complete solution of the system can 
+be found by considering the space of all linear combinations of the normal modes. \\ 
+\\ 
+Mathematically, a normal mode is a set of equations, each describing a classical object of the 
+system in queston where each equation is of the form $Ae^{i(\omega t + \delta)}$, with $A, \delta, \omega \in \BR$, for a fixed 
+$\omega$ and $\delta$, as these represent the frequency and phase of the normal mode, respectively (Note 
+that we also restrict $A$ to be real since a complex amplitude will introduce a phase). Thus, in a 
+system of coupled harmonic oscillators, where the equations of motion of a system can typically all 
+be written in the form $a\ddot x_i + b \dot x_j = c x_k$, for $a,b,c \in \BC$ (usually real system don't have complex coefficients in the equations of motion, but mathematically it does generalize), where $x_i$ is the position element of the $i$th classical object in the system (this is the defining assumption that 
+characterizes a "couple oscillator system" for us here, with a potential for damping expressed by the first 
+derivative term of position), we can always reduce it down to a linear system of equations by substituting $x_i = A_ie^{i\omega t + \delta}$, and
+obtaining $-\omega^2aA_i + i\omega bA_j = cA_k$. All we don't know now is $\omega$. \\ 
+\\ 
+Now we argue that a loaded string, under certain approximations, can be mathematically represented by this type of system. Consider a system of a series of $n$ masses of mass $m$, each 
+equidistant from each other by distance $l$, and each connected by a string with constant tension $T$, where the two masses at the end are attached to $y=0$. The setup is shown in the figure below:\\
+\\
+\begin{center}
+    \includegraphics[scale=.6]{images/loadedstring.JPG}
+\end{center}
+\begin{center}
+    \bf{Figure 1}
+\end{center}
+\vspace{.25in}
+We exclusively consider the y-coordinate of each mass, using the approximation that the x-position of each mass stays roughly constant, as held together by opposing forces from the 
+tension in the string. \\ 
+\\ 
+Next, we make the assumption that the y-dispaclement is much larger than the separation between any two masses. This allows us to use the small 
+angle approximation and say that $tan(\theta) \approxeq sin(\theta)$.\\
+\\ 
+Thus, for some mass $i$, the equations of motion are: 
+
+\begin{align*} 
+    F &= ma \\ 
+    T_{left} + T_{right} &= m\ddot y_i \\ 
+    -Tsin(\theta_{left}) + Tsin(\theta_{right}) &= m\ddot y_i \\ 
+    -Ttan(\theta_{left}) + Ttan(\theta_{right}) &= m\ddot y_i \\ 
+    T \frac{y_{i-1}-y_i}{l} + T \frac{y_{i+1}-y_i}{l} &= m\ddot y_i \\
+    y_{i-1} - 2y_i +y_{i+1} &= \frac{ml}{T}\ddot y_i
+\end{align*}
+
+On the boundary, at $i = 1$ and $i = n$, we take $y_0 = y_{n+1} = 0$, since 
+the strings at the end attach to $y = 0$.\\ 
+\\ 
+Now this is a linear system of 2nd order differential equations precisely in the form 
+that we use to solve coupled oscillator systems. Therefore, we can solve for normal modes, 
+where $y_i(t) = A_i e^{i\omega t + \delta}$, so our differential equations become algebraic 
+equations in the form $y_{i-1} - 2y_i + y_{i+1} = -\omega ^2 \frac{ml}{T}\ddot y_i$.\\ 
+\\ 
+This system can written as the following matrix equation:
+
+\begin{center}
+    \[
+        \begin{bmatrix}
+            2 & -1 & 0 &  \dots &&0 \\ 
+            -1 & 2 & -1 & 0 & \dots \\ 
+            0 & -1 & 2 & -1 & 0 &  \\ 
+            \vdots & 0 & \ddots & \ddots & \ddots & \vdots      
+        \end{bmatrix}
+        \begin{bmatrix}
+            y_0 \\
+            \vdots \\
+            \vdots \\
+            y_n
+        \end{bmatrix}
+        = 
+        \omega^2 \frac{ml}{T}
+        \begin{bmatrix}
+            y_0 \\
+            \vdots \\
+            \vdots \\
+            y_n
+        \end{bmatrix}
+    \]
+\end{center}
+\vspace{.25in}
+This is an eigenvalue problem for $\omega$. We can see from this that since the left tridiagonal matrix 
+is it's own conjugate transpose, it is Hermitian (or self-adjoint), which implies there exists an orthonormal eigenbasis of 
+this operator, which therefore implies that there are n distinct 1-dimensional eigenspaces of this operator. Therefore, \textbf{a loaded string 
+of $n$ masses will have $n$ distinct normal modes}, since these eigenspaces will span an $n$ dimensional vector space. 
+
+\section{Numerical Solutions to Schrodinger Equation}
+
+We consider the one-dimensional time-independent Schrodinger Equation for a potential $V(x)$. Our goal is to 
+generate numerical solution to potentials that are difficult to analytically solve for. To do this, we need to 
+discretize our Hilbert Space, since we do not have infinite computing power. We approach this by "sampling" values
+of our wavefunction in discrete intervals, forming a discrete basis  $\{x_0, \dots, x_n\}$ for a new vector space that we can construct our 
+eigenvalue problem for.\\ 
+\\ 
+We then need to construct our Hamiltonian in this discrete basis. For $\hat H = -\frac{\hbar^2}{2m} \frac{\partial}{\partial^2x} + V(x)$, the potential term 
+is simple, for it is simply a diagonal matrix with the $i$th diagonal entry as $V(x_i)$ (represents multiplying each position value by $V(x)$). The second derivative 
+at $x_i$ is approximately $\frac{x_{i-1}-2x_{i}+x_{i+1}}{2dx}$, so our Hamiltonian in this new finite-dimensional sampled vector space is:
+
+    \[\bar H = 
+    \frac{\hbar^2}{2m \times dx}  
+    \begin{bmatrix}
+        2 & -1 & 0 &  \dots &&0 \\ 
+        -1 & 2 & -1 & 0 & \dots \\ 
+        0 & -1 & 2 & -1 & 0 &  \\ 
+        \vdots & 0 & \ddots & \ddots & \ddots & \vdots      
+    \end{bmatrix} + \begin{bmatrix}
+        V(x_0) & \dots & & & 0 \\
+        \vdots & V(x_1) & \dots& \\
+        &\vdots&\ddots &&\\
+        0 &&&0 
+    \end{bmatrix} \]
+\vspace{.25in}\\
+\\
+For this Hamiltonian, we are assuming that $x_0 = x_n = 0$, which is necessary to get a square matrix to represent an operator on a vector space, 
+but introduces boundary conditions that an infinite potential well at both endpoints would introduce. Thus, all solutions using this numerical method 
+model those in an infinite potential well.\\
+\\
+Now we can solve the Hamiltonian eigenvalue problem in this discrete position-basis vector space for a vector of position values $\{x_0,  \dots , x_n\}$, which 
+can give us a sample of our wavefunction solutions. Additionally, when this is implemented in code, $\hbar$ is set to a constant, usually $1$, so all units are in 
+terms of $\hbar$. \\ 
+\\ 
 
 
 
